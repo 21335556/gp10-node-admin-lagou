@@ -1,0 +1,54 @@
+2019-06-10
+JavaScript(ECMAScript)宿主环境：
+- Node.js
+- 浏览器
+- flash(ActionScript)
+
+广义的JS = ES + BOM + DOM
+
+Node.js 能干什么
+- API接口开发
+- 工具的运行环境
+- 桌面系统
+
+nvm:
+编辑.bash_profile:
+将下面代码copy进去
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+然后输入: source .bash_profile
+
+Node进程维护工具：
+pm2
+nodemon
+supervisor
+
+npm 修改源
+npm config set registry https://registry.npm.taobao.org
+npm config get registry
+
+版本号命名，GNU
+2.88.0
+2: major
+88: minor
+0: patch 偶数是稳定版，基数是测试版
+
+npm：地址
+http://note.youdao.com/noteshare?id=38061e990e1120299e9e1720466d0fdc
+
+2019-06-12
+http
+- server: createServer
+- get(url|options)
+- require(options)
+- get/post
+- spider, post, 跨域(二次封装, 代理)
+
+2019-06-13
+服务器端页面渲染
+1、页面打开速度快
+2、有利于SEO优化
+浏览器端页面渲染
+1、前后端分离
+2、开发，维护成本低

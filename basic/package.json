@@ -1,0 +1,26 @@
+{
+  "name": "basic",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cheerio": "^1.0.0-rc.3",
+    "ejs": "^3.0.1",
+    "express": "^4.17.1",
+    "http-proxy-middleware": "^0.20.0",
+    "https": "^1.0.0",
+    "jquery": "^3.4.1",
+    "request": "^2.88.0",
+    "underscore": "^1.9.1"
+  },
+  "devDependencies": {
+    "gp10-hello-world": "^1.12.3"
+  }
+}
