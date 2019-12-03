@@ -1,22 +1,21 @@
 const db = require('../utils/db')
 
-const userModel = {
-  _init() {
-    this.UserModel = db.model('users', {
+class UserModel {
+  constructor() {
+    this.userModel = db.model('users', {
       username: String,
       password: String
     })
-  },
+  }
 
-  save(data) {
-    // 实例化Model，同时传入要插入的数据
-    const users = new this.UserModel(data)
-    // 执行插入操作
+  insert(data) {
+    let users = new this.userModel(data)
     return users.save()
+  }
+
+  select(data) {
+    return this.userModel.findOne({ username: data.username })
   }
 }
 
-// 初始化
-userModel._init()
-
-module.exports = userModel
+module.exports = new UserModel()
