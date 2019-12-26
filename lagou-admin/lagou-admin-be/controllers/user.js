@@ -61,9 +61,13 @@ class UserController {
     let result = await userModel.select(req.body)
     // 给前端构建json接口
     if(result) {
+      // 创建session,保存用户名
+      req.session.username = result['username']
+      // res.cookie('name', 'tobi')
       if(await userController._comparePassword(req.body.password, result['password'])) {
         res.render('succ', {
           data: JSON.stringify({
+            username: result['username'],
             message: '登录成功.'
           })
         })
@@ -81,6 +85,33 @@ class UserController {
         })
       })
     }
+  }
+
+  issignin(req, res, next) {
+    res.set( 'Content-Type', 'application/json;charset=utd-8');
+    if(req.session.username) {
+      res.render('succ', {
+        data: JSON.stringify({
+          username: req.session.username,
+          isSignin: true
+        })
+      })
+    } else {
+      res.render('succ', {
+        data: JSON.stringify({
+          isSignin:false
+        })
+      })
+    }
+  }
+
+  signout(req, res, next) {
+    req.session = null
+    res.render('succ', {
+      data: JSON.stringify({
+        isSignin:false
+      })
+    })
   }
 }
 

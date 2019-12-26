@@ -7,44 +7,75 @@ class Users {
 
   }
 
-  _renderUerTpl({ isSignin = false }) {
-    let template = Handlebars.compile(userTpl)
-    let renderedUserTpl = template({
-      isSignin
+  _renderUerTpl({ isSignin = false, username = '' }) {
+    // 认证
+    $.ajax({
+      url: '/api/users/isSignin',
+      success: (result) => {
+        let template = Handlebars.compile(userTpl)
+        let renderedUserTpl = template({
+          isSignin: result.data.isSignin,
+          username: result.data.username
+        })
+        $('.user-menu').html(renderedUserTpl)
+      }
     })
-    $('.user-menu').html(renderedUserTpl)
+
   }
 
   // 渲染user模板，绑定登录注册事件
-  _user(res) {
+  _user() {
     let that = this
     this._renderUerTpl({})
     // 标签默认事件
+
+    $('.user-menu').on('click', '#signout', () => {
+      $.ajax({
+        url: '/api/users/signout',
+        success: (result) => {
+          location.reload()
+        }
+      })
+    })
+
     $('#user').on('click', 'span', function (e) {
       // e.stopPropagation()
       if ($(this).attr('id') === 'user-signin') {
         $('.box-title').html('登录')
-        that._doSign('/api/users/signin')
+        that._doSign('/api/users/signin', 'signin')
       } else {
         $('.box-title').html('注册')
-        that._doSign('/api/users/signup')
+        that._doSign('/api/users/signup', 'signup')
       }
     })
   }
 
   // 登录注册ajax
-  _doSign(url) {
+  _doSign(url, type) {
     $('#confirm').off('click').on('click', async () => {
       return $.ajax({
         url,
         type: 'POST',
         // "content-type": 'application/x-www-from-urlencoded',
         data: $('#user-from').serialize(),
-        success(result) {
-          alert(result.data.message)
+        success: (result) => {
+          if (type === 'signin') {
+            this._signinSucc(result)
+          } else {
+            alert(result.data.message)
+          }
         }
       })
     })
+  }
+
+  _signinSucc(result) {
+    if (result.ret) {
+      this._renderUerTpl({
+        isSignin: true,
+        username: result.data.username
+      })
+    }
   }
 }
 
