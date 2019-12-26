@@ -3,8 +3,6 @@ import userTpl from '../views/user.html'
 class Users {
   constructor() {
     this._renderUerTpl({ isSignin: false })
-    this._user()
-
   }
 
   _renderUerTpl({ isSignin = false, username = '' }) {
@@ -18,6 +16,7 @@ class Users {
           username: result.data.username
         })
         $('.user-menu').html(renderedUserTpl)
+        this._user()
       }
     })
 
@@ -26,7 +25,6 @@ class Users {
   // 渲染user模板，绑定登录注册事件
   _user() {
     let that = this
-    this._renderUerTpl({})
     // 标签默认事件
 
     $('.user-menu').on('click', '#signout', () => {
