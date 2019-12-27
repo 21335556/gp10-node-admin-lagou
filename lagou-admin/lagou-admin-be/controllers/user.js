@@ -1,6 +1,9 @@
 const userModel = require('../modules/users')
 // bcryptjs等同于bcrypt
 const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+const fs = require('fs')
+const path = require('path')
 
 class UserController {
   _hashPassword(pwd, cb) {
@@ -18,6 +21,12 @@ class UserController {
       })
     })
   } 
+
+  genToken(username) {
+    let cert = fs.readFileSync(path.resolve(__dirname, '../keys/rsa_private_key.pem'))
+    // let cert = 'i love u'
+    return jwt.sign({username}, cert, {algorithm:'RS256'})
+  }
   
   async signup(req, res, next) {
     res.set( 'Content-Type', 'application/json;charset=utd-8');
@@ -62,9 +71,13 @@ class UserController {
     // 给前端构建json接口
     if(result) {
       // 创建session,保存用户名
-      req.session.username = result['username']
+      // req.session.username = result['username']
       // res.cookie('name', 'tobi')
+
       if(await userController._comparePassword(req.body.password, result['password'])) {
+        // 生成token
+        res.header('X-Access-Token', userController.genToken(result.username))
+        
         res.render('succ', {
           data: JSON.stringify({
             username: result['username'],
@@ -105,14 +118,14 @@ class UserController {
     }
   }
 
-  signout(req, res, next) {
-    req.session = null
-    res.render('succ', {
-      data: JSON.stringify({
-        isSignin:false
-      })
-    })
-  }
+  // signout(req, res, next) {
+  //   req.session = null
+  //   res.render('succ', {
+  //     data: JSON.stringify({
+  //       isSignin:false
+  //     })
+  //   })
+  // }
 }
 
 userController = new UserController

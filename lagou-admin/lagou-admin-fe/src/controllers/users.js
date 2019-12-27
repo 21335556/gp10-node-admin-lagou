@@ -1,25 +1,29 @@
 import userTpl from '../views/user.html'
+import oAuth from '../utils/oAuth'
 
 class Users {
   constructor() {
-    this._renderUerTpl({ isSignin: false })
+    // this._renderUerTpl({ isSignin: false })
+    this._init()
+  }
+  
+  async _init() {
+    let result = await oAuth()
+    if (result) {
+      this._renderUerTpl({...result.data})
+    } else {
+      this._renderUerTpl({isSignin:false})
+    }
   }
 
   _renderUerTpl({ isSignin = false, username = '' }) {
-    // 认证
-    $.ajax({
-      url: '/api/users/isSignin',
-      success: (result) => {
-        let template = Handlebars.compile(userTpl)
-        let renderedUserTpl = template({
-          isSignin: result.data.isSignin,
-          username: result.data.username
-        })
-        $('.user-menu').html(renderedUserTpl)
-        this._user()
-      }
+    let template = Handlebars.compile(userTpl)
+    let renderedUserTpl = template({
+      isSignin,
+      username
     })
-
+    $('.user-menu').html(renderedUserTpl)
+    this._user()
   }
 
   // 渲染user模板，绑定登录注册事件
@@ -28,12 +32,8 @@ class Users {
     // 标签默认事件
 
     $('.user-menu').on('click', '#signout', () => {
-      $.ajax({
-        url: '/api/users/signout',
-        success: (result) => {
-          location.reload()
-        }
-      })
+      localStorage.removeItem('token')
+      location.reload()
     })
 
     $('#user').on('click', 'span', function (e) {
@@ -56,9 +56,9 @@ class Users {
         type: 'POST',
         // "content-type": 'application/x-www-from-urlencoded',
         data: $('#user-from').serialize(),
-        success: (result) => {
+        success: (result, statesCode, jqXHR) => {
           if (type === 'signin') {
-            this._signinSucc(result)
+            this._signinSucc(result, jqXHR)
           } else {
             alert(result.data.message)
           }
@@ -67,13 +67,16 @@ class Users {
     })
   }
 
-  _signinSucc(result) {
+  _signinSucc(result, jqXHR) {
     if (result.ret) {
       this._renderUerTpl({
         isSignin: true,
         username: result.data.username
       })
     }
+
+    // 存储token
+    localStorage.setItem('token', jqXHR.getResponseHeader('X-Access-Token'))
   }
 }
 
