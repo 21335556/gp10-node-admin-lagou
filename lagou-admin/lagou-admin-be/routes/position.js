@@ -2,10 +2,12 @@ var express = require('express');
 var router = express.Router();
 
 const positionController = require('../controllers/position')
-const oAuth = require('../middlewares/oAuth')
+const oAuthBase = require('../middlewares/oAuth-base')
+const fileUpload = require('../middlewares/Upload-file')
 
 router.route('/')
-  .all(oAuth)
-  .get(positionController.find)
+  .all(oAuthBase)
+  .get(positionController.findAll)
+  .post(fileUpload.uploadFile, positionController.save)
 
 module.exports = router
