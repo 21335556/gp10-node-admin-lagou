@@ -26,9 +26,9 @@
         <th>岗位薪资</th>
         <th style="width: 180px">操作</th>
       </tr>
-      <tr>
         {{#if hasResult}}
         {{#each data}}
+      <tr data-id="{{_id}}">
         <td >{{@index}}</td>
         <td><img width="50" height="50" src="http://localhost:3000/upload/{{companyLogo}}" alt=""></td>
         <td>{{companyName}}</td>
@@ -39,7 +39,7 @@
         <td>
           <button class="btn btn-sm btn-primary btn-update"><span class="fa fa-edit"></span>
             修改</button>
-          <button class="btn btn-sm btn-danger btn-delete"><span class="fa fa-remove"></span> 删除</button>
+          <button class="btn btn-sm btn-danger btn-delete btn-delete"><span class="fa fa-remove"></span> 删除</button>
         </td>
       </tr>
       {{/each}}

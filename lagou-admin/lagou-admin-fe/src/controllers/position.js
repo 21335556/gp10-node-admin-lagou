@@ -1,6 +1,8 @@
 import positionTpl from '../views/position-list.hbs'
 import positionAddTpl from '../views/position-add.hbs'
+import positionUpdateTpl from '../views/position-update.hbs'
 import oAuth from '../utils/oAuth'
+import randomString from 'randomstring'
 
 export const render = async (req, res, next) => {
   let result = await oAuth()
@@ -28,28 +30,98 @@ export const add = (rea, res, next) => {
   bindPositionAddEvent(res)
 }
 
+export const update = (req, res, next) => {
+  $.ajax({
+    url: '/api/position/one',
+    data: {
+      id: req.params.id
+    },
+    type: 'GET',
+    headers: {
+      'X-Access-Token': localStorage.getItem('token')
+    },
+    success(result) {
+      if (result.ret) {
+        res.render(positionUpdateTpl({
+          ...result.data,
+        }))
+      } else {
+        alert(result.data)
+      }
+    }
+  })
+
+  bindPositionUpdateEvent(req, res)
+}
+
 function bindPositionListEvent(res) {
-  $('#router-view').on('click', '#addbtn', (e) => {
+  $('#router-view').off('click').on('click', '#addbtn', (e) => {
     res.go('/position_add')
+  })
+  $('#router-view').off('click', '.btn-delete').on('click', '.btn-delete', function (e) {
+    $.ajax({
+      url: '/api/position',
+      type: 'DELETE',
+      data: {
+        id: $(this).closest('tr').attr('data-id')
+      },
+      headers: {
+        'X-Access-Token': localStorage.getItem('token')
+      },
+      success(result) {
+        if (result.ret) {
+          res.go('/position/' + randomString.generate(7))
+        } else {
+          alert(result.data)
+        }
+      }
+    })
+  })
+  $('#router-view').off('click', '.btn-update').on('click', '.btn-update', function (e) {
+    res.go('/position_update/' + $(this).closest('tr').attr('data-id'))
+  })
+}
+
+function bindPositionUpdateEvent(req, res) {
+  $('#router-view').off('click', '#posback').on('click', '#posback', (e) => {
+    res.back()
+  })
+
+  $('#router-view').off('click', '#possubmit').on('click', '#possubmit', (e) => {
+  // $('#possubmit').off('click').on('click', (e) => {
+    $('#posupdate').ajaxSubmit({
+      resetForm: true,
+      headers: {
+        'X-Access-Token': localStorage.getItem('token')
+      },
+      success(result) {
+        if (result.ret) {
+          res.back()
+        } else {
+          alert(result.data)
+        }
+      }
+    })
   })
 }
 
 function bindPositionAddEvent(res) {
-  $('#posback').on('click', (e) => {
+  $('#posback').off('click').on('click', (e) => {
     res.back()
   })
 
-
-  $('#possubmit').on('click', (e) => {
+  $('#possubmit').off('click').on('click', (e) => {
     $('#possave').ajaxSubmit({
-      url: '/api/position',
-      type: 'POST',
+      resetForm: true,
       headers: {
         'X-Access-Token': localStorage.getItem('token')
       },
-      resetForm: true,
       success(result) {
-        res.back()
+        if (result.ret) {
+          res.back()
+        } else {
+          alert(result.data)
+        }
       }
     })
   })

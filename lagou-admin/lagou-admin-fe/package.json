@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "handlebars": "^4.5.3",
+    "randomstring": "^1.1.5",
     "sme-router": "^0.12.8",
     "webpack": "^4.41.2",
     "webpack-dev-server": "^3.9.0"
