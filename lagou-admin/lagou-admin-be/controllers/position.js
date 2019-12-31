@@ -1,7 +1,7 @@
 const positionModel = require('../modules/position')
 
 class PositionController {
-  constructor() {}
+  constructor() { }
 
   async findAll(req, res, next) {
     res.set('Content-Type', 'application/json; charset=utf-8')
@@ -15,17 +15,37 @@ class PositionController {
     res.render('succ', { data: JSON.stringify(result) })
   }
 
+  async findMany(req, res, next) {
+    res.set('Content-Type', 'application/json; charset=utf-8')
+    // 获取前端传入数据
+    let { page = 0, pagesize = 10, keywords = '' } = req.query
+    let result = await positionModel.findMany({
+      page: ~~page,
+      pagesize: ~~pagesize,
+      keywords
+    })
+
+    if(result) {
+      res.render('succ', {
+        data: JSON.stringify({
+          result,
+          total: (await positionModel.findAll(keywords)).length
+        })
+      })
+    }
+  }
+
   async save(req, res, next) {
     // 从对象里删除 companyLogo 属性
     delete req.body.companyLogo
-    
+
     let result = await positionModel.save({
       ...req.body,
       // 接收传递的 filename
       companyLogo: req.filename
     })
 
-    if(result) {
+    if (result) {
       res.render('succ', {
         data: JSON.stringify({
           message: '数据保存成功.'
@@ -36,7 +56,7 @@ class PositionController {
 
   async delete(req, res, next) {
     let result = await positionModel.delete(req.body.id)
-    if(result) {
+    if (result) {
       res.render('succ', {
         data: JSON.stringify({
           message: '数据删除成功.'
@@ -53,11 +73,24 @@ class PositionController {
 
   async update(req, res, next) {
     res.set('Content-Type', 'application/json; charset=utf-8')
-    res.render('succ', {
-      data: JSON.stringify({
-        message: '数据修改成功.'
+    delete req.body.companyLogo
+    req.body = req.filename ? { ...req.body, companyLogo: req.filename } : req.body
+    console.log(req.body.id)
+    let result = await positionModel.update(req.body.id, req.body)
+    if (result) {
+      res.render('succ', {
+        data: JSON.stringify({
+          message: '数据修改成功.'
+        })
       })
-    })
+    } else {
+      res.render('fail', {
+        data: JSON.stringify({
+          message: '数据修改失败.'
+        })
+      })
+
+    }
   }
 }
 
