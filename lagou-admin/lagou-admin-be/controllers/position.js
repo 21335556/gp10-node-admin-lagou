@@ -1,7 +1,23 @@
+var express = require('express');
+var app = express();
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+
+let mySocket = null
+io.on('connection', function (socket) {
+  // console.log(socket)
+  mySocket = socket
+  mySocket.emit('message', 'send');
+});
+
+server.listen(8088, 'localhost')
+
 const positionModel = require('../modules/position')
 
 class PositionController {
-  constructor() { }
+  constructor() {
+    // console.log(mySocket)
+  }
 
   async findAll(req, res, next) {
     res.set('Content-Type', 'application/json; charset=utf-8')
@@ -25,7 +41,7 @@ class PositionController {
       keywords
     })
 
-    if(result) {
+    if (result) {
       res.render('succ', {
         data: JSON.stringify({
           result,
@@ -51,6 +67,8 @@ class PositionController {
           message: '数据保存成功.'
         })
       })
+
+      mySocket.emit('message', 'send');
     }
   }
 
